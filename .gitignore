@@ -9,6 +9,7 @@ dist
 build
 private
 restats
+uv.lock
 
 # Coverage reports
 .coverage
@@ -35,3 +36,6 @@ venv/
 # A-stock parquet data (fetched, not committed)
 data/astock/daily_prices_parquet/*.parquet
 data/astock/minutes_prices_parquet/
+
+# Superpowers design docs and plans
+docs/superpowers/

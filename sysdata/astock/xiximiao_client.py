@@ -132,6 +132,34 @@ class XiximiaoClient:
             return pd.DataFrame()
         return df.sort_values("trade_date").reset_index(drop=True)
 
+    def fetch_fund_daily(
+        self,
+        ts_code: str,
+        start_date: str,
+        end_date: str,
+    ) -> pd.DataFrame:
+        """
+        获取基金日线数据（ETF）
+
+        Args:
+            ts_code:    '510300.SH'
+            start_date: '20240101'
+            end_date:   '20241231'
+
+        Returns:
+            DataFrame with columns: ts_code, trade_date, pre_close, open, high, low, close,
+                                    change, pct_chg, vol, amount
+        """
+        df = self._call_with_retry(
+            self._pro.fund_daily,
+            ts_code=ts_code,
+            start_date=start_date,
+            end_date=end_date,
+        )
+        if df is None or df.empty:
+            return pd.DataFrame()
+        return df.sort_values("trade_date").reset_index(drop=True)
+
     # ── stk_mins ───────────────────────────────────────────────
 
     def fetch_minutes(
@@ -201,11 +229,21 @@ class XiximiaoClient:
         end: datetime,
     ) -> pd.DataFrame:
         """便捷方法：datetime 入参"""
-        return self.fetch_daily(
-            ts_code=ts_code,
-            start_date=start.strftime("%Y%m%d"),
-            end_date=end.strftime("%Y%m%d"),
-        )
+        start_str = start.strftime("%Y%m%d")
+        end_str = end.strftime("%Y%m%d")
+
+        return self.fetch_daily(ts_code=ts_code, start_date=start_str, end_date=end_str)
+
+    def fetch_fund_daily_range(
+        self,
+        ts_code: str,
+        start: datetime,
+        end: datetime,
+    ) -> pd.DataFrame:
+        """Convenience method: datetime args for fund_daily (ETFs)."""
+        start_str = start.strftime("%Y%m%d")
+        end_str = end.strftime("%Y%m%d")
+        return self.fetch_fund_daily(ts_code=ts_code, start_date=start_str, end_date=end_str)
 
     def fetch_minutes_range(
         self,
